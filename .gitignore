@@ -1,0 +1,6 @@
+# Ignorar directorios y archivos sensibles
+data_form/
+.venv/
+.idea/
+__pycache__/
+*.pyc
