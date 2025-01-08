@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agregar Persona</title>
+</head>
+<body>
+    <h1>Agregar Persona</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="primer_nombre">Primer Nombre:</label>
+        <input type="text" name="primer_nombre" required><br>
+        <label for="segundo_nombre">Segundo Nombre:</label>
+        <input type="text" name="segundo_nombre"><br>
+        <label for="apellido_paterno">Apellido Paterno:</label>
+        <input type="text" name="apellido_paterno" required><br>
+        <label for="apellido_materno">Apellido Materno:</label>
+        <input type="text" name="apellido_materno"><br>
+        <label for="genero">Género:</label>
+        <input type="text" name="genero" required><br>
+        <label for="telefono">Teléfono:</label>
+        <input type="text" name="telefono" required><br>
+        <label for="correo">Correo:</label>
+        <input type="email" name="correo" required><br>
+        <label for="direccion">Dirección:</label>
+        <input type="text" name="direccion" required><br>
+        <button type="submit">Guardar</button>
+    </form>
+</body>
+</html>

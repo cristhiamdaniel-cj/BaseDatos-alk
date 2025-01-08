@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Personas</title>
+</head>
+<body>
+    <h1>Lista de Personas</h1>
+    <a href="{% url 'agregar_persona' %}">Agregar Persona</a>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre Completo</th>
+                <th>Género</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+                <th>Dirección</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for persona in personas %}
+            <tr>
+                <td>{{ persona.id_persona }}</td>
+                <td>{{ persona.primer_nombre }} {{ persona.segundo_nombre }} {{ persona.apellido_paterno }} {{ persona.apellido_materno }}</td>
+                <td>{{ persona.genero }}</td>
+                <td>{{ persona.telefono }}</td>
+                <td>{{ persona.correo }}</td>
+                <td>{{ persona.direccion }}</td>
+                <td>
+                    <a href="{% url 'editar_persona' persona.id_persona %}">Editar</a> |
+                    <a href="{% url 'eliminar_persona' persona.id_persona %}">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
