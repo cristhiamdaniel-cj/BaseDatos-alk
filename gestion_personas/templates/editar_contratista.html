@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editar Contratista</title>
+</head>
+<body>
+    <h1>Editar Contratista</h1>
+    <form method="POST" action="/editar_contratista/{{ contratista.id_persona }}/">
+        {% csrf_token %}
+        <!-- Información personal -->
+        <h2>Información Personal</h2>
+        <label for="primer_nombre">Primer Nombre:</label>
+        <input type="text" name="primer_nombre" value="{{ contratista.primer_nombre }}" required><br>
+
+        <label for="segundo_nombre">Segundo Nombre:</label>
+        <input type="text" name="segundo_nombre" value="{{ contratista.segundo_nombre }}"><br>
+
+        <label for="apellido_paterno">Apellido Paterno:</label>
+        <input type="text" name="apellido_paterno" value="{{ contratista.apellido_paterno }}" required><br>
+
+        <label for="apellido_materno">Apellido Materno:</label>
+        <input type="text" name="apellido_materno" value="{{ contratista.apellido_materno }}"><br>
+
+        <label for="genero">Género:</label>
+        <select name="genero" required>
+            <option value="M" {% if contratista.genero == "M" %}selected{% endif %}>Masculino</option>
+            <option value="F" {% if contratista.genero == "F" %}selected{% endif %}>Femenino</option>
+            <option value="O" {% if contratista.genero == "O" %}selected{% endif %}>Otro</option>
+        </select><br>
+
+        <label for="telefono">Teléfono:</label>
+        <input type="text" name="telefono" value="{{ contratista.telefono }}" required><br>
+
+        <label for="correo">Correo:</label>
+        <input type="email" name="correo" value="{{ contratista.correo }}" required><br>
+
+        <label for="direccion">Dirección:</label>
+        <input type="text" name="direccion" value="{{ contratista.direccion }}"><br>
+
+        <!-- Identificación -->
+        <h2>Identificación</h2>
+        <label for="numero_identificacion">Número de Identificación:</label>
+        <input type="text" name="numero_identificacion" value="{{ contratista.numero_identificacion }}" required><br>
+
+        <label for="lugar_expedicion">Lugar de Expedición:</label>
+        <input type="text" name="lugar_expedicion" value="{{ contratista.lugar_expedicion }}"><br>
+
+        <!-- Formación Académica -->
+        <h2>Formación Académica</h2>
+        <label for="nivel_formacion">Nivel de Formación:</label>
+        <input type="text" name="nivel_formacion" value="{{ contratista.nivel_formacion }}"><br>
+
+        <label for="area_formacion">Área de Formación:</label>
+        <input type="text" name="area_formacion" value="{{ contratista.area_formacion }}"><br>
+
+        <!-- Características Personales -->
+        <h2>Características Personales</h2>
+        <label for="rango_edad">Rango de Edad:</label>
+        <input type="text" name="rango_edad" value="{{ contratista.rango_edad }}"><br>
+
+        <label for="es_fumador">¿Es Fumador?:</label>
+        <select name="es_fumador">
+            <option value="SI" {% if contratista.es_fumador == "SI" %}selected{% endif %}>Sí</option>
+            <option value="NO" {% if contratista.es_fumador == "NO" %}selected{% endif %}>No</option>
+        </select><br>
+
+        <label for="consume_alcohol">¿Consume Alcohol?:</label>
+        <select name="consume_alcohol">
+            <option value="SI" {% if contratista.consume_alcohol == "SI" %}selected{% endif %}>Sí</option>
+            <option value="NO" {% if contratista.consume_alcohol == "NO" %}selected{% endif %}>No</option>
+        </select><br>
+
+        <label for="recibe_molestias_por_consumo">¿Recibe molestias por consumo?:</label>
+        <select name="recibe_molestias_por_consumo">
+            <option value="SI" {% if contratista.recibe_molestias_por_consumo == "SI" %}selected{% endif %}>Sí</option>
+            <option value="NO" {% if contratista.recibe_molestias_por_consumo == "NO" %}selected{% endif %}>No</option>
+        </select><br>
+
+        <!-- Contrato -->
+        <h2>Contrato</h2>
+        <label for="estado_proceso">Estado del Proceso:</label>
+        <input type="text" name="estado_proceso" value="{{ contratista.estado_proceso }}" required><br>
+
+        <label for="fecha_inicio_contrato">Fecha de Inicio del Contrato:</label>
+        <input type="date" name="fecha_inicio_contrato" value="{{ contratista.fecha_inicio_contrato }}"><br>
+
+        <label for="fecha_fin_contrato">Fecha de Fin del Contrato:</label>
+        <input type="date" name="fecha_fin_contrato" value="{{ contratista.fecha_fin_contrato }}"><br>
+
+        <label for="numero_contrato">Número de Contrato:</label>
+        <input type="text" name="numero_contrato" value="{{ contratista.numero_contrato }}"><br>
+
+        <label for="meses_antiguedad">Meses de Antigüedad:</label>
+        <input type="number" name="meses_antiguedad" value="{{ contratista.meses_antiguedad }}"><br>
+
+        <label for="honorarios_mes">Honorarios Mensuales:</label>
+        <input type="number" name="honorarios_mes" value="{{ contratista.honorarios_mes }}" step="0.01"><br>
+
+        <label for="objeto_contrato">Objeto del Contrato:</label>
+        <textarea name="objeto_contrato">{{ contratista.objeto_contrato }}</textarea><br>
+
+        <label for="numero_obligaciones">Número de Obligaciones:</label>
+        <input type="number" name="numero_obligaciones" value="{{ contratista.numero_obligaciones }}"><br>
+
+        <!-- Área, Subgrupo y Rol -->
+        <h2>Asignación de Área, Subgrupo y Rol</h2>
+        <label for="area">Área:</label>
+        <select name="area" id="area">
+            {% for area in areas %}
+                <option value="{{ area.id_area }}" {% if area.id_area == contratista.id_area %}selected{% endif %}>{{ area.nombre_area }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="subgrupo">Subgrupo:</label>
+        <select name="subgrupo" id="subgrupo">
+            {% for subgrupo in subgrupos %}
+                <option value="{{ subgrupo.id_subgrupo }}" {% if subgrupo.id_subgrupo == contratista.id_subgrupo %}selected{% endif %}>{{ subgrupo.nombre_subgrupo }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="rol">Rol:</label>
+        <select name="rol" id="rol">
+            {% for rol in roles %}
+                <option value="{{ rol.id_rol }}" {% if rol.id_rol == contratista.id_rol %}selected{% endif %}>{{ rol.nombre_rol }}</option>
+            {% endfor %}
+        </select><br>
+
+        <!-- Supervisor -->
+        <h2>Supervisor</h2>
+        <label for="supervisor">Supervisor:</label>
+        <select name="supervisor" id="supervisor">
+            {% for supervisor in supervisores %}
+                <option value="{{ supervisor.id_supervisor }}" {% if supervisor.id_supervisor == contratista.id_supervisor %}selected{% endif %}>{{ supervisor.nombre_supervisor }}</option>
+            {% endfor %}
+        </select><br>
+
+        <button type="submit">Guardar Cambios</button>
+    </form>
+</body>
+</html>

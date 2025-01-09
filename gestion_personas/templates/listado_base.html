@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Listado Base</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        .toggle-column {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setupColumnToggles();
+            displayLastTenRows();
+        });
+
+        // Mostrar u ocultar columnas desde el encabezado
+        function setupColumnToggles() {
+            const headers = document.querySelectorAll('thead th');
+            const columnsCount = headers.length;
+
+            headers.forEach((header, index) => {
+                header.addEventListener('click', () => {
+                    toggleColumn(index, columnsCount);
+                });
+            });
+
+            // Restablecer todas las columnas
+            document.getElementById('reset-columns').addEventListener('click', resetColumns);
+        }
+
+        function toggleColumn(columnIndex, totalColumns) {
+            const allCells = document.querySelectorAll(`table tr`);
+            allCells.forEach(row => {
+                const cell = row.children[columnIndex];
+                if (cell) {
+                    cell.style.display = cell.style.display === 'none' ? '' : 'none';
+                }
+            });
+        }
+
+        // Restablece todas las columnas ocultas
+        function resetColumns() {
+            const allCells = document.querySelectorAll('table tr');
+            allCells.forEach(row => {
+                Array.from(row.children).forEach(cell => {
+                    cell.style.display = '';
+                });
+            });
+        }
+
+        // Mostrar únicamente los últimos 10 registros
+        function displayLastTenRows() {
+            const rows = Array.from(document.querySelectorAll('tbody tr'));
+            const totalRows = rows.length;
+            const rowsToShow = rows.slice(-10);
+
+            rows.forEach(row => row.style.display = 'none');
+            rowsToShow.forEach(row => row.style.display = '');
+        }
+    </script>
+</head>
+<body>
+    <h1>Listado Base</h1>
+    <div class="controls">
+        <p>
+            Mostrando los últimos 10 registros. Para ver más registros, usa la opción
+            <a href="/listado_base/consulta">Consulta avanzada</a>.
+        </p>
+        <button id="reset-columns">Restablecer columnas</button>
+    </div>
+    <table border="1" id="data-table">
+        <thead>
+            <tr>
+                {% for col in columns %}
+                    <th class="toggle-column">{{ col }}</th>
+                {% endfor %}
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+                <tr>
+                    {% for cell in row %}
+                        <td>{{ cell }}</td>
+                    {% endfor %}
+                    <td>
+                        <button onclick="window.location.href='/editar_contratista/{{ row.0 }}/'">Editar</button>
+                        <button onclick="eliminarContratista('{{ row.0 }}')">Eliminar</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

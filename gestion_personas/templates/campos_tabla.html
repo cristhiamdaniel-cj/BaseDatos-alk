@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Campos de la Tabla {{ tabla }}</title>
+</head>
+<body>
+    <h1>Campos de la Tabla: {{ tabla }}</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nombre del Campo</th>
+                <th>Tipo de Dato</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for columna in columnas %}
+            <tr>
+                <td>{{ columna.0 }}</td>
+                <td>{{ columna.1 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/tablas/">Volver a la lista de tablas</a>
+</body>
+</html>
+

@@ -13,3 +13,14 @@ class Persona(models.Model):
 
     class Meta:
         db_table = 'personas'  # Apunta a la tabla existente
+
+
+
+class Identificacion(models.Model):
+    id_identificacion = models.AutoField(primary_key=True)
+    id_persona = models.ForeignKey(Persona, on_delete=models.CASCADE, related_name='identificaciones')
+    numero_identificacion = models.BigIntegerField(unique=True)
+    lugar_expedicion = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = 'identificacion'  # Apunta a la tabla existente

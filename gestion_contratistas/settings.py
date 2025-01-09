@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-ysno#2g2975pqt$s#wpu4+rgn(*j#3jp^#$m1ih*8izh0)m4fm
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'matriz-pruebas.ngrok.io']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'matriz-pruebas.sa.ngrok.io']
 
 # Application definition
 
@@ -127,4 +127,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CSRF_TRUSTED_ORIGINS = ['https://matriz-pruebas.ngrok.io']
+CSRF_TRUSTED_ORIGINS = ['https://matriz-pruebas.sa.ngrok.io']

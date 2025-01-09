@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirmar Eliminación</title>
+</head>
+<body>
+    <h1>Confirmar Eliminación</h1>
+    <p>¿Estás seguro de que deseas eliminar al contratista <strong>{{ contratista.primer_nombre }} {{ contratista.apellido_paterno }}</strong>?</p>
+
+    <p>Esta acción no se puede deshacer.</p>
+
+    <form method="POST" action="/eliminar_contratista/{{ contratista.id_persona }}/">
+        {% csrf_token %}
+        <button type="submit">Eliminar</button>
+        <a href="/listado_base/">Cancelar</a>
+    </form>
+</body>
+</html>

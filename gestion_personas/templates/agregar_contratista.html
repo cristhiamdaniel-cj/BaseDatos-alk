@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Contratista</title>
+</head>
+<body>
+    <h1>Agregar Contratista</h1>
+    <form method="POST" action="/guardar_contratista/">
+        {% csrf_token %}
+
+        <!-- Información personal -->
+        <h2>Información Personal</h2>
+        <label for="primer_nombre">Primer Nombre:</label>
+        <input type="text" name="primer_nombre" required><br>
+
+        <label for="segundo_nombre">Segundo Nombre:</label>
+        <input type="text" name="segundo_nombre"><br>
+
+        <label for="apellido_paterno">Apellido Paterno:</label>
+        <input type="text" name="apellido_paterno" required><br>
+
+        <label for="apellido_materno">Apellido Materno:</label>
+        <input type="text" name="apellido_materno"><br>
+
+        <label for="genero">Género:</label>
+        <select name="genero" required>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+            <option value="O">Otro</option>
+        </select><br>
+
+        <label for="telefono">Teléfono:</label>
+        <input type="text" name="telefono" required><br>
+
+        <label for="correo">Correo:</label>
+        <input type="email" name="correo" required><br>
+
+        <label for="direccion">Dirección:</label>
+        <input type="text" name="direccion"><br>
+
+        <!-- Identificación -->
+        <h2>Identificación</h2>
+        <label for="numero_identificacion">Número de Identificación:</label>
+        <input type="text" name="numero_identificacion" required><br>
+
+        <label for="lugar_expedicion">Lugar de Expedición:</label>
+        <input type="text" name="lugar_expedicion"><br>
+
+        <!-- Formación Académica -->
+        <h2>Formación Académica</h2>
+        <label for="nivel_formacion">Nivel de Formación:</label>
+        <input type="text" name="nivel_formacion"><br>
+
+        <label for="area_formacion">Área de Formación:</label>
+        <input type="text" name="area_formacion"><br>
+
+        <!-- Características Personales -->
+        <h2>Características Personales</h2>
+        <label for="rango_edad">Rango de Edad:</label>
+        <input type="text" name="rango_edad"><br>
+
+        <label for="es_fumador">¿Es Fumador?:</label>
+        <select name="es_fumador">
+            <option value="SI">Sí</option>
+            <option value="NO">No</option>
+        </select><br>
+
+        <label for="consume_alcohol">¿Consume Alcohol?:</label>
+        <select name="consume_alcohol">
+            <option value="SI">Sí</option>
+            <option value="NO">No</option>
+        </select><br>
+
+        <label for="recibe_molestias_por_consumo">¿Recibe molestias por consumo?:</label>
+        <select name="recibe_molestias_por_consumo">
+            <option value="SI">Sí</option>
+            <option value="NO">No</option>
+        </select><br>
+
+        <!-- Familiar y Social -->
+        <h2>Familiar y Social</h2>
+        <label for="vivienda_propia">¿Vivienda Propia?:</label>
+        <select name="vivienda_propia">
+            <option value="SI">Sí</option>
+            <option value="NO">No</option>
+        </select><br>
+
+        <label for="personas_a_cargo">Personas a Cargo:</label>
+        <input type="text" name="personas_a_cargo"><br>
+
+        <label for="relacion_parentesco">Relación de Parentesco:</label>
+        <input type="text" name="relacion_parentesco"><br>
+
+        <!-- Lactancia y Maternidad -->
+        <h2>Lactancia y Maternidad</h2>
+        <label for="estado_gestacion">Estado de Gestación:</label>
+        <input type="text" name="estado_gestacion"><br>
+
+        <label for="mes_gestacion">Mes de Gestación:</label>
+        <input type="text" name="mes_gestacion"><br>
+
+        <label for="fecha_parto">Fecha de Parto:</label>
+        <input type="date" name="fecha_parto"><br>
+
+        <label for="fuente_lactante">Fuente Lactante:</label>
+        <input type="text" name="fuente_lactante"><br>
+
+        <!-- Contrato -->
+        <h2>Contrato</h2>
+        <label for="estado_proceso">Estado del Proceso:</label>
+        <input type="text" name="estado_proceso" required><br>
+
+        <label for="fecha_inicio_contrato">Fecha de Inicio del Contrato:</label>
+        <input type="date" name="fecha_inicio_contrato"><br>
+
+        <label for="fecha_fin_contrato">Fecha de Fin del Contrato:</label>
+        <input type="date" name="fecha_fin_contrato"><br>
+
+        <label for="numero_contrato">Número de Contrato:</label>
+        <input type="text" name="numero_contrato"><br>
+
+        <label for="meses_antiguedad">Meses de Antigüedad:</label>
+        <input type="number" name="meses_antiguedad"><br>
+
+        <label for="honorarios_mes">Honorarios Mensuales:</label>
+        <input type="number" name="honorarios_mes" step="0.01"><br>
+
+        <label for="objeto_contrato">Objeto del Contrato:</label>
+        <textarea name="objeto_contrato"></textarea><br>
+
+        <label for="numero_obligaciones">Número de Obligaciones:</label>
+        <input type="number" name="numero_obligaciones"><br>
+
+        <!-- Área, Subgrupo y Rol -->
+        <h2>Asignación de Área, Subgrupo y Rol</h2>
+        <label for="area">Área:</label>
+        <select name="area" id="area" onchange="cargarSubgrupos()" required>
+            <option value="">Seleccione un área</option>
+            {% for area in areas %}
+                <option value="{{ area.id_area }}">{{ area.nombre_area }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="subgrupo">Subgrupo:</label>
+        <select name="subgrupo" id="subgrupo" onchange="cargarRoles()" required>
+            <option value="">Seleccione un subgrupo</option>
+        </select><br>
+
+        <label for="rol">Rol:</label>
+        <select name="rol" id="rol" required>
+            <option value="">Seleccione un rol</option>
+        </select><br>
+
+        <!-- Supervisor -->
+        <h2>Supervisor</h2>
+        <label for="supervisor">Supervisor:</label>
+        <input type="text" name="supervisor" id="supervisor"><br>
+
+        <button type="submit">Guardar Contratista</button>
+    </form>
+
+    <script>
+        function cargarSubgrupos() {
+            const areaId = document.getElementById('area').value;
+            const subgrupoSelect = document.getElementById('subgrupo');
+            subgrupoSelect.innerHTML = '<option value="">Seleccione un subgrupo</option>';
+
+            fetch(`/obtener_subgrupos_roles/?id_area=${areaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.subgrupos.forEach(subgrupo => {
+                        const option = document.createElement('option');
+                        option.value = subgrupo.id;
+                        option.textContent = subgrupo.nombre;
+                        subgrupoSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error al cargar subgrupos:', error));
+        }
+
+        function cargarRoles() {
+            const subgrupoId = document.getElementById('subgrupo').value;
+            const rolSelect = document.getElementById('rol');
+            rolSelect.innerHTML = '<option value="">Seleccione un rol</option>';
+
+            fetch(`/obtener_subgrupos_roles/?id_subgrupo=${subgrupoId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.roles.forEach(rol => {
+                        const option = document.createElement('option');
+                        option.value = rol.id;
+                        option.textContent = rol.nombre;
+                        rolSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error al cargar roles:', error));
+        }
+    </script>
+</body>
+</html>

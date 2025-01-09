@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tablas Disponibles</title>
+</head>
+<body>
+    <h1>Tablas Disponibles</h1>
+    <ul>
+        {% for tabla in tablas %}
+        <li><a href="{% url 'campos_tabla' tabla=tabla %}">{{ tabla }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+
