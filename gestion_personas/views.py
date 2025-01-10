@@ -100,6 +100,8 @@ def guardar_contratista(request):
 
 
 # Vista para /listado_base
+# Vista para /listado_base
+# Vista para /listado_base
 def listado_base(request):
     with connection.cursor() as cursor:
         query = """
@@ -149,7 +151,15 @@ def listado_base(request):
             c.meses_antiguedad,
             c.honorarios_mes,
             c.objeto_contrato,
-            c.numero_obligaciones
+            c.numero_obligaciones,
+            pc.numero_sipse,
+            pc.fecha_de_solicitud_no_hay,
+            pc.numero_de_no_hay,
+            pc.CDP,
+            pc.CRP,
+            pc.fecha_de_vencimiento_no_hay,
+            pc.abogado_a_cargo,
+            pc.riesgo -- Campo agregado
         FROM personas p
         LEFT JOIN identificacion i ON p.id_persona = i.id_persona
         LEFT JOIN formacion_academica fa ON p.id_persona = fa.id_persona
@@ -159,19 +169,21 @@ def listado_base(request):
         LEFT JOIN hijos_familia hf ON cp.id_caracterizacion = hf.id_caracterizacion
         LEFT JOIN salud_pensiones sp ON p.id_persona = sp.id_persona
         LEFT JOIN pension_retiro pr ON p.id_persona = pr.id_persona
-        LEFT JOIN areas a ON a.id_area = p.id_persona -- Relación ejemplo, modificar según diseño
-        LEFT JOIN subgrupos s ON s.id_area = a.id_area -- Relación ejemplo, modificar según diseño
-        LEFT JOIN roles r ON r.id_subgrupo = s.id_subgrupo -- Relación ejemplo, modificar según diseño
+        LEFT JOIN areas a ON a.id_area = p.id_persona
+        LEFT JOIN subgrupos s ON s.id_area = a.id_area
+        LEFT JOIN roles r ON r.id_subgrupo = s.id_subgrupo
         LEFT JOIN supervisores sup ON p.id_persona = sup.id_persona
         LEFT JOIN contratos c ON p.id_persona = c.id_persona
+        LEFT JOIN proceso_contractual pc ON pc.abogado_a_cargo = sup.nombre_supervisor
         ORDER BY p.id_persona DESC
-        LIMIT 10;  -- Mostrar solo los últimos 10 registros
+        LIMIT 10; -- Mostrar solo los últimos 10 registros
         """
         cursor.execute(query)
         columns = [col[0] for col in cursor.description]
         rows = cursor.fetchall()
 
     return render(request, 'listado_base.html', {'columns': columns, 'rows': rows})
+
 
 # Vista para /tablas
 def lista_tablas(request):
@@ -189,7 +201,9 @@ def lista_tablas(request):
         'subgrupos', 
         'roles', 
         'supervisores', 
-        'contratos'  # Incluimos la tabla contratos
+        'contratos',
+        'proceso_contractual',
+        'proceso_personas'
     ]
     return render(request, 'lista_tablas.html', {'tablas': tablas})
 
