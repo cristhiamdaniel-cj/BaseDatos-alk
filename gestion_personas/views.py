@@ -135,7 +135,24 @@ def campos_tabla(request, tabla):
 
 
 def agregar_contratista(request):
-    pass
+    """
+    Renderiza el formulario para agregar un nuevo contratista.
+    """
+    try:
+        # Consultar las áreas disponibles para mostrarlas en el formulario
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT id_area, nombre_area FROM areas;")
+            areas = [{'id_area': row[0], 'nombre_area': row[1]} for row in cursor.fetchall()]
+
+        # Renderizar la plantilla con el contexto necesario
+        return render(request, 'agregar_contratista.html', {
+            'areas': areas  # Pasar las áreas al contexto para generar la lista dinámica
+        })
+
+    except Exception as e:
+        # Manejar errores si ocurre algún problema durante la consulta
+        return JsonResponse({'error': f'Error al cargar el formulario: {str(e)}'}, status=500)
+
 
 
 def guardar_contratista(request):
