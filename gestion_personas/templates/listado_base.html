@@ -1,86 +1,162 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listado Base</title>
     <style>
-        .hidden {
-            display: none;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
         }
+
+        h1 {
+            color: #333;
+        }
+
         .controls {
             margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
-        .toggle-column {
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .pagination li {
+            margin: 0 5px;
+        }
+
+        .pagination a {
+            display: block;
+            padding: 8px 12px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .pagination a:hover {
+            background-color: #0056b3;
+        }
+
+        .pagination .active a {
+            background-color: #0056b3;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+            font-weight: bold;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f1f1f1;
+        }
+
+        tr {
+            height: 50px;
+        }
+
+        td.objeto_contrato {
+            max-height: 100px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            margin: 0 5px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            color: blue;
-            text-decoration: underline;
+            transition: background-color 0.3s;
+        }
+
+        .action-btn:hover {
+            background-color: #218838;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+
+        .btn-update {
+            background-color: #ffc107;
+        }
+
+        .btn-update:hover {
+            background-color: #e0a800;
         }
     </style>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            setupColumnToggles();
-            displayLastTenRows();
+        function confirmDelete(id, nombreCompleto) {
+    if (confirm(`¿Estás seguro de que deseas eliminar a ${nombreCompleto}?`)) {
+        fetch(`/eliminar/${id}/`, { // URL con id_persona dinámico
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload(); // Recarga la página después de eliminar
+            } else {
+                alert(data.error || 'Error al eliminar el registro.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al conectar con el servidor.');
         });
+    }
+}
 
-        // Mostrar u ocultar columnas desde el encabezado
-        function setupColumnToggles() {
-            const headers = document.querySelectorAll('thead th');
-            const columnsCount = headers.length;
-
-            headers.forEach((header, index) => {
-                header.addEventListener('click', () => {
-                    toggleColumn(index, columnsCount);
-                });
-            });
-
-            // Restablecer todas las columnas
-            document.getElementById('reset-columns').addEventListener('click', resetColumns);
-        }
-
-        function toggleColumn(columnIndex, totalColumns) {
-            const allCells = document.querySelectorAll(`table tr`);
-            allCells.forEach(row => {
-                const cell = row.children[columnIndex];
-                if (cell) {
-                    cell.style.display = cell.style.display === 'none' ? '' : 'none';
-                }
-            });
-        }
-
-        // Restablece todas las columnas ocultas
-        function resetColumns() {
-            const allCells = document.querySelectorAll('table tr');
-            allCells.forEach(row => {
-                Array.from(row.children).forEach(cell => {
-                    cell.style.display = '';
-                });
-            });
-        }
-
-        // Mostrar únicamente los últimos 10 registros
-        function displayLastTenRows() {
-            const rows = Array.from(document.querySelectorAll('tbody tr'));
-            const totalRows = rows.length;
-            const rowsToShow = rows.slice(-10);
-
-            rows.forEach(row => row.style.display = 'none');
-            rowsToShow.forEach(row => row.style.display = '');
-        }
     </script>
 </head>
 <body>
     <h1>Listado Base</h1>
-    <div class="controls">
-        <p>
-            Mostrando los últimos 10 registros. Para ver más registros, usa la opción
-            <a href="/listado_base/consulta">Consulta avanzada</a>.
-        </p>
-        <button id="reset-columns">Restablecer columnas</button>
-    </div>
-    <table border="1" id="data-table">
+    <table>
         <thead>
             <tr>
                 {% for col in columns %}
-                    <th class="toggle-column">{{ col }}</th>
+                    <th>{{ col }}</th>
                 {% endfor %}
                 <th>Acciones</th>
             </tr>
@@ -89,15 +165,45 @@
             {% for row in rows %}
                 <tr>
                     {% for cell in row %}
-                        <td>{{ cell }}</td>
+                        <td{% if loop.index == 8 %} class="objeto_contrato"{% endif %}>{{ cell }}</td>
                     {% endfor %}
                     <td>
-                        <button onclick="window.location.href='/editar_contratista/{{ row.0 }}/'">Editar</button>
-                        <button onclick="eliminarContratista('{{ row.0 }}')">Eliminar</button>
+                        <button 
+                            class="action-btn btn-update" 
+                            onclick="window.location.href='/actualizar/{{ row.0 }}/'">
+                            Actualizar
+                        </button>
+
+                        <button 
+                            class="action-btn btn-delete" 
+                            onclick="confirmDelete('{{ row.0 }}', '{{ row.1 }} {{ row.2 }} {{ row.3 }} {{ row.4 }}')">
+                            Eliminar
+                        </button>
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <!-- Paginación -->
+    <ul class="pagination">
+        {% if rows.has_previous %}
+            <li><a href="?page=1">Primera</a></li>
+            <li><a href="?page={{ rows.previous_page_number }}">Anterior</a></li>
+        {% endif %}
+
+        {% for num in rows.paginator.page_range %}
+            {% if num == rows.number %}
+                <li class="active"><a href="?page={{ num }}">{{ num }}</a></li>
+            {% else %}
+                <li><a href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if rows.has_next %}
+            <li><a href="?page={{ rows.next_page_number }}">Siguiente</a></li>
+            <li><a href="?page={{ rows.paginator.num_pages }}">Última</a></li>
+        {% endif %}
+    </ul>
 </body>
 </html>

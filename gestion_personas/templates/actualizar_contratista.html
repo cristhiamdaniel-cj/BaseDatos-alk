@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Contratista</title>
+    <script>
+        function validarFormulario(event) {
+            const telefono = document.getElementById('telefono').value;
+            const correo = document.getElementById('correo').value;
+
+            const telefonoRegex = /^\d{10}$/;
+            if (!telefonoRegex.test(telefono)) {
+                alert('El número de teléfono debe contener exactamente 10 dígitos.');
+                event.preventDefault();
+                return false;
+            }
+
+            const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!correoRegex.test(correo)) {
+                alert('El correo electrónico no tiene un formato válido.');
+                event.preventDefault();
+                return false;
+            }
+
+            return true;
+        }
+
+        function actualizarSubgrupos() {
+            const areaId = document.getElementById('area').value;
+            fetch(`/obtener_subgrupos_roles/?id_area=${areaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const subgrupoSelect = document.getElementById('subgrupo');
+                    subgrupoSelect.innerHTML = '<option value="" disabled selected>Seleccione un subgrupo</option>';
+                    data.subgrupos.forEach(subgrupo => {
+                        const option = document.createElement('option');
+                        option.value = subgrupo.id;
+                        option.textContent = subgrupo.nombre;
+                        subgrupoSelect.appendChild(option);
+                    });
+
+                    const rolSelect = document.getElementById('rol');
+                    rolSelect.innerHTML = '<option value="" disabled selected>Seleccione un rol</option>';
+                })
+                .catch(error => console.error('Error al obtener subgrupos:', error));
+        }
+
+        function actualizarRoles() {
+            const subgrupoId = document.getElementById('subgrupo').value;
+            fetch(`/obtener_subgrupos_roles/?id_subgrupo=${subgrupoId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const rolSelect = document.getElementById('rol');
+                    rolSelect.innerHTML = '<option value="" disabled selected>Seleccione un rol</option>';
+                    data.roles.forEach(rol => {
+                        const option = document.createElement('option');
+                        option.value = rol.id;
+                        option.textContent = rol.nombre;
+                        rolSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error al obtener roles:', error));
+        }
+    </script>
+</head>
+<body>
+    <h1>Actualizar Contratista</h1>
+    <form method="POST" onsubmit="return validarFormulario(event)">
+        {% csrf_token %}
+
+        <!-- Identificación básica -->
+        <label for="id_persona">ID Persona:</label>
+        <input type="text" id="id_persona" name="id_persona" value="{{ contratista.id_persona }}" readonly><br><br>
+
+        <label for="primer_nombre">Primer Nombre:</label>
+        <input type="text" id="primer_nombre" name="primer_nombre" value="{{ contratista.primer_nombre }}" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo letras permitidas."><br><br>
+
+        <label for="segundo_nombre">Segundo Nombre:</label>
+        <input type="text" id="segundo_nombre" name="segundo_nombre" value="{{ contratista.segundo_nombre }}" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo letras permitidas."><br><br>
+
+        <label for="apellido_paterno">Apellido Paterno:</label>
+        <input type="text" id="apellido_paterno" name="apellido_paterno" value="{{ contratista.apellido_paterno }}" required pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo letras permitidas."><br><br>
+
+        <label for="apellido_materno">Apellido Materno:</label>
+        <input type="text" id="apellido_materno" name="apellido_materno" value="{{ contratista.apellido_materno }}" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+" title="Solo letras permitidas."><br><br>
+
+        <label for="genero">Género:</label>
+        <select id="genero" name="genero" required>
+            <option value="M" {% if contratista.genero == "M" %}selected{% endif %}>Masculino</option>
+            <option value="F" {% if contratista.genero == "F" %}selected{% endif %}>Femenino</option>
+        </select><br><br>
+
+        <label for="telefono">Teléfono:</label>
+        <input type="text" id="telefono" name="telefono" value="{{ contratista.telefono }}" required pattern="\d{10}" title="Debe contener exactamente 10 dígitos."><br><br>
+
+        <label for="correo">Correo Electrónico:</label>
+        <input type="email" id="correo" name="correo" value="{{ contratista.correo }}" required><br><br>
+
+        <label for="direccion">Dirección:</label>
+        <textarea id="direccion" name="direccion" required>{{ contratista.direccion }}</textarea><br><br>
+
+        <label for="numero_identificacion">Número de Identificación:</label>
+        <input type="text" id="numero_identificacion" name="numero_identificacion" value="{{ contratista.numero_identificacion }}" required pattern="\d+" title="Solo números permitidos."><br><br>
+
+        <label for="lugar_expedicion">Lugar de Expedición:</label>
+        <input type="text" id="lugar_expedicion" name="lugar_expedicion" value="{{ contratista.lugar_expedicion }}" required><br><br>
+
+        <label for="numero_contrato">Número de Contrato:</label>
+        <input type="text" id="numero_contrato" name="numero_contrato" value="{{ contratista.numero_contrato }}" required><br><br>
+
+        <label for="fecha_inicio">Fecha de Inicio:</label>
+        <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ contratista.fecha_inicio }}" required><br><br>
+
+        <label for="fecha_fin">Fecha de Fin:</label>
+        <input type="date" id="fecha_fin" name="fecha_fin" value="{{ contratista.fecha_fin }}" required><br><br>
+
+        <label for="meses_antiguedad">Meses de Antigüedad:</label>
+        <input type="number" id="meses_antiguedad" name="meses_antiguedad" value="{{ contratista.meses_antiguedad }}" min="0" required><br><br>
+
+        <label for="honorarios_mes">Honorarios Mensuales:</label>
+        <input type="number" step="0.01" id="honorarios_mes" name="honorarios_mes" value="{{ contratista.honorarios_mes }}" required min="0"><br><br>
+
+        <label for="objeto_contrato">Objeto del Contrato:</label>
+        <textarea id="objeto_contrato" name="objeto_contrato" required>{{ contratista.objeto_contrato }}</textarea><br><br>
+
+        <label for="numero_sipse">Número SIPSE:</label>
+        <input type="text" id="numero_sipse" name="numero_sipse" value="{{ contratista.numero_sipse }}" required><br><br>
+
+        <label for="riesgo">Riesgo:</label>
+        <input type="number" id="riesgo" name="riesgo" value="{{ contratista.riesgo }}" required min="0" max="100"><br><br>
+
+        <label for="rango_edad">Rango de Edad:</label>
+        <input type="text" id="rango_edad" name="rango_edad" value="{{ contratista.rango_edad }}" required><br><br>
+
+        <label for="es_fumador">¿Fuma?:</label>
+        <select id="es_fumador" name="es_fumador" required>
+            <option value="Sí" {% if contratista.es_fumador == "Sí" %}selected{% endif %}>Sí</option>
+            <option value="No" {% if contratista.es_fumador == "No" %}selected{% endif %}>No</option>
+        </select><br><br>
+
+        <label for="consume_alcohol">¿Consume Alcohol?:</label>
+        <select id="consume_alcohol" name="consume_alcohol" required>
+            <option value="Sí" {% if contratista.consume_alcohol == "Sí" %}selected{% endif %}>Sí</option>
+            <option value="No" {% if contratista.consume_alcohol == "No" %}selected{% endif %}>No</option>
+        </select><br><br>
+
+        <label for="recibe_molestias_por_consumo">¿Recibe Molestias por Consumo?:</label>
+        <select id="recibe_molestias_por_consumo" name="recibe_molestias_por_consumo" required>
+            <option value="Sí" {% if contratista.recibe_molestias_por_consumo == "Sí" %}selected{% endif %}>Sí</option>
+            <option value="No" {% if contratista.recibe_molestias_por_consumo == "No" %}selected{% endif %}>No</option>
+        </select><br><br>
+
+        <label for="vivienda_propia">¿Vivienda Propia?:</label>
+        <select id="vivienda_propia" name="vivienda_propia" required>
+            <option value="Sí" {% if contratista.vivienda_propia == "Sí" %}selected{% endif %}>Sí</option>
+            <option value="No" {% if contratista.vivienda_propia == "No" %}selected{% endif %}>No</option>
+        </select><br><br>
+
+        <label for="personas_a_cargo">Personas a Cargo:</label>
+        <input type="number" id="personas_a_cargo" name="personas_a_cargo" value="{{ contratista.personas_a_cargo }}" min="0" required><br><br>
+
+        <label for="eps">EPS:</label>
+        <input type="text" id="eps" name="eps" value="{{ contratista.eps }}" required><br><br>
+
+        <label for="fondo_pensiones">Fondo de Pensiones:</label>
+        <input type="text" id="fondo_pensiones" name="fondo_pensiones" value="{{ contratista.fondo_pensiones }}" required><br><br>
+
+        <label for="arl">ARL:</label>
+        <input type="text" id="arl" name="arl" value="{{ contratista.arl }}" required><br><br>
+
+        <label for="estado_gestacion">Estado de Gestación:</label>
+        <select id="estado_gestacion" name="estado_gestacion" required>
+            <option value="Sí" {% if contratista.estado_gestacion == "Sí" %}selected{% endif %}>Sí</option>
+            <option value="No" {% if contratista.estado_gestacion == "No" %}selected{% endif %}>No</option>
+        </select><br><br>
+
+        <label for="fecha_parto">Fecha de Parto:</label>
+        <input type="date" id="fecha_parto" name="fecha_parto" value="{{ contratista.fecha_parto }}"><br><br>
+
+        <label for="fuente_lactante">Fuente Lactante:</label>
+        <input type="text" id="fuente_lactante" name="fuente_lactante" value="{{ contratista.fuente_lactante }}"><br><br>
+
+        <label for="numero_nota">Número Nota:</label>
+        <input type="number" id="numero_nota" name="numero_nota" value="{{ contratista.numero_nota }}" min="0"><br><br>
+
+        <label for="estimacion_pension">Estimación de Pensión:</label>
+        <textarea id="estimacion_pension" name="estimacion_pension">{{ contratista.estimacion_pension }}</textarea><br><br>
+
+        <label for="nombre_supervisor">Nombre del Supervisor:</label>
+        <input type="text" id="nombre_supervisor" name="nombre_supervisor" value="{{ contratista.nombre_supervisor }}"><br><br>
+
+ 
+        <!-- Listas dinámicas -->
+        <label for="area">Área:</label>
+        <select id="area" name="area" onchange="actualizarSubgrupos()" required>
+            <option value="" disabled selected>Seleccione un área</option>
+            {% for area in areas %}
+                <option value="{{ area.id_area }}" {% if area.id_area == contratista.id_area %}selected{% endif %}>
+                    {{ area.nombre_area }}
+                </option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="subgrupo">Subgrupo:</label>
+        <select id="subgrupo" name="subgrupo" onchange="actualizarRoles()" required>
+            <option value="" disabled selected>Seleccione un subgrupo</option>
+            {% for subgrupo in subgrupos %}
+                <option value="{{ subgrupo.id_subgrupo }}" {% if subgrupo.id_subgrupo == contratista.id_subgrupo %}selected{% endif %}>
+                    {{ subgrupo.nombre_subgrupo }}
+                </option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="rol">Rol:</label>
+        <select id="rol" name="rol" required>
+            <option value="" disabled selected>Seleccione un rol</option>
+            {% for rol in roles %}
+                <option value="{{ rol.id_rol }}" {% if rol.id_rol == contratista.id_rol %}selected{% endif %}>
+                    {{ rol.nombre_rol }}
+                </option>
+            {% endfor %}
+        </select><br><br>
+
+
+
+<script>
+function cargarSubgrupos() {
+    const idArea = document.getElementById('id_area').value;
+    fetch(`/obtener_subgrupos_roles/?id_area=${idArea}`)
+        .then(response => response.json())
+        .then(data => {
+            const subgrupoSelect = document.getElementById('id_subgrupo');
+            subgrupoSelect.innerHTML = '';
+            data.subgrupos.forEach(subgrupo => {
+                const option = document.createElement('option');
+                option.value = subgrupo.id;
+                option.textContent = subgrupo.nombre;
+                subgrupoSelect.appendChild(option);
+            });
+            cargarRoles();
+        });
+}
+
+function cargarRoles() {
+    const idSubgrupo = document.getElementById('id_subgrupo').value;
+    fetch(`/obtener_subgrupos_roles/?id_subgrupo=${idSubgrupo}`)
+        .then(response => response.json())
+        .then(data => {
+            const rolSelect = document.getElementById('id_rol');
+            rolSelect.innerHTML = '';
+            data.roles.forEach(rol => {
+                const option = document.createElement('option');
+                option.value = rol.id;
+                option.textContent = rol.nombre;
+                rolSelect.appendChild(option);
+            });
+        });
+}
+</script>
+
+
+        <button type="submit">Guardar Cambios</button>
+    </form>
+</body>
+</html>

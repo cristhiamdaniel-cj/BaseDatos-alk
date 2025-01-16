@@ -24,13 +24,12 @@ try:
     # Insertar cada fila del DataFrame en la tabla contratos
     for _, row in df.iterrows():
         # Verificar que los campos necesarios no sean nulos
-        if not pd.isna(row['telefono']) and not pd.isna(row['estado_proceso']):
+        if not pd.isna(row['telefono']):
             query = """
             INSERT INTO contratos (
                 id_persona,
-                estado_proceso,
-                fecha_inicio_contrato,
-                fecha_fin_contrato,
+                fecha_inicio,
+                fecha_fin,
                 numero_contrato,
                 meses_antiguedad,
                 honorarios_mes,
@@ -39,13 +38,12 @@ try:
             )
             SELECT 
                 p.id_persona, 
-                %s, %s, %s, %s, %s, %s, %s, %s
+                %s, %s, %s, %s, %s, %s, %s
             FROM personas p
             WHERE p.telefono = %s
             ON CONFLICT DO NOTHING;
             """
             cursor.execute(query, (
-                row['estado_proceso'],  # Estado del proceso
                 cast_to_date(row['fecha_inicio_contrato']),  # Fecha de inicio del contrato
                 cast_to_date(row['fecha_fin_contrato']),  # Fecha de fin del contrato
                 row['numero_contrato'],  # Número del contrato

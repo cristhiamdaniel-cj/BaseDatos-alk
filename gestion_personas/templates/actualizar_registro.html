@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Actualizar Registro</title>
+</head>
+<body>
+    <h1>Actualizar Registro</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {% for key, value in data.items %}
+            <label for="{{ key }}">{{ key }}</label>
+            <input type="text" name="{{ key }}" id="{{ key }}" value="{{ value }}">
+            <br>
+        {% endfor %}
+        <button type="submit">Guardar Cambios</button>
+        <a href="/listado_base/">Cancelar</a>
+    </form>
+</body>
+</html>

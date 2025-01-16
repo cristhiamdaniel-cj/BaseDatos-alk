@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard de Indicadores</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 20px;
+        }
+        h1, h2 {
+            color: #4CAF50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .chart-container {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dashboard de Indicadores</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% else %}
+        <!-- Gráfico de Personas con y sin SIPSE -->
+        <h2>Gráfico de Personas con y sin Número SIPSE</h2>
+        <div id="chart-sipse" class="chart-container"></div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var sipseData = [{
+                    labels: {{ data.labels|safe }},
+                    values: {{ data.values|safe }},
+                    type: 'pie'
+                }];
+
+                var sipseLayout = {
+                    title: 'Distribución de Personas con y sin Número SIPSE',
+                    height: 400,
+                    width: 500
+                };
+
+                Plotly.newPlot('chart-sipse', sipseData, sipseLayout);
+            });
+        </script>
+
+        <!-- Gráfico de Histograma de Días Transcurridos -->
+        <h2>Histograma de Días Transcurridos desde la Fecha de Solicitud</h2>
+        <div id="histograma-dias" class="chart-container"></div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var diasData = [{
+                    x: {{ dias_transcurridos.x|safe }},
+                    y: {{ dias_transcurridos.y|safe }},
+                    type: 'bar'
+                }];
+
+                var diasLayout = {
+                    title: 'Días Transcurridos desde la Fecha de Solicitud',
+                    xaxis: { title: 'Días Transcurridos' },
+                    yaxis: { title: 'Cantidad de Procesos' },
+                    height: 400,
+                    width: 700
+                };
+
+                Plotly.newPlot('histograma-dias', diasData, diasLayout);
+            });
+        </script>
+
+        <!-- Tabla de Personas con Más de 10 Días -->
+        <h2>Personas con más de 10 días desde la Fecha de Solicitud</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Persona</th>
+                    <th>Nombre Completo</th>
+                    <th>ID SIPSE</th>
+                    <th>Fecha de Solicitud</th>
+                    <th>Días Transcurridos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for persona in personas_mas_dias %}
+                <tr>
+                    <td>{{ persona.id_persona }}</td>
+                    <td>{{ persona.nombre_completo }}</td>
+                    <td>{{ persona.numero_sipse }}</td>
+                    <td>{{ persona.fecha_de_solicitud }}</td>
+                    <td>{{ persona.dias_transcurridos }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Completitud de Campos -->
+        <h2>Completitud de Campos - Vista Unificada</h2>
+        <div id="chart-completeness" class="chart-container"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Campo</th>
+                    <th>Total Registros</th>
+                    <th>Total Nulos</th>
+                    <th>% Completitud</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in completitud %}
+                <tr>
+                    <td>{{ item.column_name }}</td>
+                    <td>{{ item.total_registros }}</td>
+                    <td>{{ item.total_nulos }}</td>
+                    <td>{{ item.porcentaje_completitud }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var completenessData = {{ completitud|safe }};
+
+                var xData = completenessData.map(item => item.column_name);
+                var yData = completenessData.map(item => item.porcentaje_completitud);
+
+                var data = [{
+                    x: xData,
+                    y: yData,
+                    type: 'bar',
+                    marker: {
+                        color: 'rgba(50, 171, 96, 0.6)',
+                        line: {
+                            color: 'rgba(50, 171, 96, 1.0)',
+                            width: 2
+                        }
+                    }
+                }];
+
+                var layout = {
+                    title: 'Porcentaje de Completitud por Campo',
+                    xaxis: { title: 'Campos' },
+                    yaxis: { title: 'Porcentaje de Completitud' },
+                    height: 500,
+                    width: 1000
+                };
+
+                Plotly.newPlot('chart-completeness', data, layout);
+            });
+        </script>
+
+        <!-- Otros Indicadores Adicionales -->
+        <h2>Indicadores Generales</h2>
+        <ul>
+            <li><strong>Total de personas:</strong> {{ data.total_personas }}</li>
+            <li><strong>Personas con SIPSE:</strong> {{ data.personas_con_sipse }}</li>
+            <li><strong>Personas sin SIPSE:</strong> {{ data.personas_sin_sipse }}</li>
+            <li><strong>Porcentaje con SIPSE:</strong> {{ data.porcentaje_con_sipse }}%</li>
+        </ul>
+    {% endif %}
+</body>
+</html>
